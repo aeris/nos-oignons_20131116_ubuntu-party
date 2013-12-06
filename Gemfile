@@ -1,0 +1,10 @@
+source 'https://rubygems.org'
+ruby '2.0.0'
+
+gem 'sass'
+gem 'coffee-script'
+gem 'therubyracer'
+gem 'haml'
+gem 'guard'
+gem 'guard-haml'
+gem 'guard-livereload'

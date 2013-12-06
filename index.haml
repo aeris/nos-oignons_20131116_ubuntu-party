@@ -1,0 +1,507 @@
+!!! 5
+%html{lang: 'en'}
+	%head
+		%meta{charset: 'utf-8'}
+		%title Le réseau Tor
+		%meta{content: 'Nicolas Vinot', name: 'author'}
+		%link{href: 'css/reveal.css', rel: 'stylesheet'}
+		%link{href: 'css/theme/default.css', rel: 'stylesheet'}
+		%link{href: 'lib/css/zenburn.css', rel: 'stylesheet'}
+		%script{src: 'lib/js/head.min.js'}
+		%script{src: 'js/reveal.min.js'}
+		/[if lt IE 9]
+			%script{src: 'lib/js/html5shiv.js'}
+		:coffee
+			window.onload = () ->
+				css = if window.location.search.match(/print-pdf/gi) then 'pdf' else 'paper'
+				head = document.getElementsByTagName('head')[0]
+				link  = document.createElement('link')
+				link.rel  = 'stylesheet'
+				link.type = 'text/css'
+				link.media = 'print'
+				link.href = "css/print/\#{css}.css"
+				head.appendChild(link)
+
+				Reveal.initialize
+					transition: 'none',
+					history: true
+					dependencies: [
+						{ src: 'lib/js/classList.js', condition: () -> !document.body.classList },
+						{ src: 'plugin/notes/notes.js', async: true, condition: () -> !!document.body.classList }
+					]
+		:sass
+			.alert
+				color: #ff2c2c !important
+			.warning
+				color: #ff962c !important
+			.success
+				color: #2cff2c !important
+			.info
+				color: #2c96ff !important
+
+			.compact
+				margin: 0 !important
+
+			ul, ol
+				&.arrow
+					list-style-type: none !important
+					li:before
+						content: '⇨ '
+
+			img.white
+				background-color: #fff
+			
+			sup
+				font-size: 60% !important
+				
+			.small
+				font-size: 80% !important
+				
+			table
+				margin: auto !important
+
+	%body
+		.reveal
+			.slides
+				%section
+					%h1
+						%img{src: 'img/tor.png'}
+					%h3 Protégez votre anonymat
+					%div
+						%small
+							%br
+							%a{href: 'https://nos-oignons.net/'}
+								%img.white{src: 'img/logo.png'}
+							%br
+							%a{href: 'http://twitter.com/aeris22'} @aeris
+							%br
+							17 novembre 2013, Ubuntu Party
+							%br
+							%br
+							%img{src: 'img/licence.png'}
+
+				%section
+					%br
+					%h2 Sommaire
+					%ol
+						%li Fonctionnement
+						%li Outils
+						%li Cas d'utilisation
+						%li Comment aider
+						%li Questions
+
+				%section
+					%section
+						%h3 Communications Internet
+						%img.white{src: 'img/without-tor.png'}
+						Pleins d'intermédiaires
+						%ul
+							%li FAI
+							%li Fournisseurs de contenu
+							%li Intermédiaires techniques
+							%li Points de peerings
+							%li Câbles sous-marins
+						.fragment.alert Chaque point et chaque lien peut potentiellement être compromis
+
+					%section
+						%h3 HTTP
+						%pre
+							%code{data: { trim: '' }}
+								:preserve
+									Source : 109.190.87.53 (aeris.imirhil.fr)
+									Destination : 46.51.197.89 (ec2-46-51-197-89.eu-west-1.compute.amazonaws.com)
+									Requête :
+										GET / HTTP/1.1
+										Host: duckduckgo.com
+									Réponse :
+										HTTP/1.1 200 OK
+										Content-Type: text/html; charset=UTF-8
+										&lt;!DOCTYPE html&gt;
+										&lt;html&gt;…&lt;/html&gt;
+						.fragment
+							Le paquet contient tout ce qu'il faut pour espionner
+							%ul
+								%li
+									IP source :
+									%span.alert 109.190.87.53
+								%li
+									IP destination :
+									%span.alert 46.51.197.89
+								%li
+									Site consulté :
+									%span.alert Duckduckgo
+								%li.alert Contenu de la requête
+								%li.alert Contenu de la réponse
+
+					%section
+						%h3 HTTPS
+						%pre
+							%code{data: { trim: '' }}
+								:preserve
+									Source : 109.190.87.53 (aeris.imirhil.fr)
+									Destination : 46.51.197.89 (ec2-46-51-197-89.eu-west-1.compute.amazonaws.com)
+									Requête :
+										=~IE&lt;!@@M&quot;1$M:
+										95I7$80j3O1wZ0&gt;GW&lt;^f.:v&quot;'Hrb74RrY\ZW? V~Iq'm'EXrhzp^[Rd/,
+									Réponse :
+										X5uE'@4.&quot;089:'
+										i95I#A&amp;(LygK&gt;D)GjMNt8-W7jeM?~VQ&lt;V\(&lt;;EPE@[IUmO;&amp;$K-l%2
+						.fragment
+							Le paquet contient déjà un peu moins de données sensibles
+							%ul
+								%li
+									IP source :
+									%span.alert 109.190.87.53
+								%li
+									IP destination :
+									%span.alert 46.51.197.89
+								%li
+									Site consulté :
+									%span.success
+										Duckduckgo
+										%span.fragment.alert
+											%img{src: 'img/danger.png'}
+											S.N.I.
+								%li.success Contenu de la requête
+								%li.success Contenu de la réponse
+							.fragment Peut-on aller plus loin ?
+
+					%section
+						%h2 Proxy / VPN
+
+						%img.white{src: 'img/vpn.png'}
+						%br
+						%br
+						.fragment.alert
+							%p Fondamentalement pas meilleur
+							%ul.fragment
+								%li Compromission du prestataire
+								%li Analyse temporelle
+
+					%section
+						%h2 Tor à la rescousse
+
+					%section
+						%h2 Le projet Tor
+						%br
+						.fragment
+							%p Système de routage en oignon
+							%p Logiciel libre
+							%p 1<sup>ère</sup> version en 2002
+							%p Soutenu par <i>The Tor Project</i>
+							%p Organisation à but non lucratif
+							/.fragment.alert
+							/	%br
+							/	%p Ce n'est <b>pas</b> un acronyme !!!
+
+					%section
+						%h3 Cryptographie à clef publique
+						%img.white{src: 'img/crypto.png'}
+
+					%section
+						%h3 Routage en oignon
+						%p Triple chiffrement à clef publique
+						%img.fragment.white{src: 'img/onion1.png'}
+						%img.fragment.white{src: 'img/onion2.png'}
+
+					%section
+						%h3 Communications avec Tor
+						%img.white{src: 'img/with-tor.png'}
+						%table.small
+							%tr
+								%th
+								%th.fragment{data: { fragment_index: 1 }} S → G
+								%th.fragment{data: { fragment_index: 2 }} G → M
+								%th.fragment{data: { fragment_index: 3 }} M → E
+								%th.fragment{data: { fragment_index: 4 }} E → C
+							%tr
+								%th Source
+								%td.fragment.alert{data: { fragment_index: 1 }} S.S.S.S
+								%td.fragment{data: { fragment_index: 2 }} G.G.G.G
+								%td.fragment{data: { fragment_index: 3 }} M.M.M.M
+								%td.fragment{data: { fragment_index: 4 }} E.E.E.E
+							%tr
+								%th Destination
+								%td.fragment{data: { fragment_index: 1 }} G.G.G.G
+								%td.fragment{data: { fragment_index: 2 }} M.M.M.M
+								%td.fragment{data: { fragment_index: 3 }} E.E.E.E
+								%td.fragment.alert{data: { fragment_index: 4 }} D.D.D.D
+							%tr
+								%th Contenu
+								%td.fragment{data: { fragment_index: 1 }} 5VdN57o
+								%td.fragment{data: { fragment_index: 2 }} V05IoDU
+								%td.fragment{data: { fragment_index: 3 }} MTHpBWg
+								%td.fragment.alert{data: { fragment_index: 4 }} Contenu
+						%br
+						.fragment.success
+							Plus personne ne connaît l'intégralité des données
+						.fragment.alert
+							Attention à la sortie ⇨ SSL…
+
+									
+
+					%section
+						%h3 Blocage de Tor
+						La liste des nœuds Tor est publique
+						.alert ⇨ blacklist
+						.fragment
+							Utilisation de nœuds non listés
+							.success ⇨ bridges Tor
+						%br
+						.fragment
+							Le trafic Tor est reconnaissable
+							.alert ⇨ Deep Packet Inspection
+							.fragment
+								Encapsulation dans du trafic « neutre »
+								.success
+									⇨ obfsproxy
+									%img{src: 'img/obfsproxy.png'}
+
+					%section
+						%h3 Récapitulatif : les types de nœuds
+						%img.white{src: 'img/nodes.png'}
+						.fragment
+							%span{style: 'color: #dc0800;'} Guards
+							Nœuds d'entrée publics
+						.fragment
+							%span{style: 'color: #dc0800;'} Bridges
+							Nœuds d'entrée privés
+						.fragment
+							%span{style: 'color: #286bcc;'} Middle
+							Nœuds intermédiaires
+						.fragment
+							%span{style: 'color: #6a2c89;'} Exit
+							Nœuds de sortie
+						.fragment
+							%span{style: 'color: #ffbf00;'} Obfsproxy
+							Nœuds d'obfuscation
+
+					%section
+						%h3 Services cachés
+						%img.white{src: 'img/hidden.png'}
+						%ul.fragment
+							%li Adresses en <i>.onion</i>
+							%li Double routage en oignon
+							%ul
+								%li 3 relais depuis le client
+								%li 3 relais depuis le serveur
+							%li.fragment.success Le client ne sait rien du serveur
+					
+				%section
+					%section
+						%h2 Quelques chiffres
+				
+					%section
+						%img{class: :stretch, src: 'img/network.png'}
+
+					%section
+						%p 4600 relais présents dans le réseau
+						%p 900 nœuds de sortie
+						%p 40Gb/s de bande passante
+						%p 25Gb/s utilisés
+						%p 500k utilisateurs (6% de Français)
+
+				%section
+					%section
+						%h2 Les outils
+						
+					%section
+						%h3 GNU/Linux
+						%p Vidalia + Firefox + Foxy Proxy
+						%img{src: 'img/vidalia.png'}
+						.fragment.alert
+							%p Contourne la censure
+							%p Pas d'anonymat
+
+					%section
+						%h3.alert
+							%img{src: 'img/security-low.png'}
+							Anonymat ≠ IP
+							%img{src: 'img/security-low.png'}
+
+						%ul.fragment
+							%li IP
+							%li User agent
+							%li Historique
+							%li Cookies
+							%li URL externes
+							%li Javascript
+							%li SSL
+							%li Pleins d'autres choses
+
+					%section
+						%h3.success
+							%img{src: 'img/security-high.png'}
+							Anonymat
+							%img{src: 'img/security-high.png'}
+
+						%ul
+							%li
+								Modifier son user agent
+								%span.success ⇨ User Agent Switcher
+							%li
+								Bloquer les cookies
+								%span.success ⇨ Cookie Monster
+							%li Interdire les appels externes
+							%ul.arrow.success
+								%li Request Policy
+								%li Disconnect
+								%li Adblock Edge
+							%li
+								Interdire le javascript
+								%span.success ⇨ No Script
+							%li Faire attention aux certificates SSL
+							%ul.arrow.success
+								%li HTTPS Everywhere
+								%li Certificate Patrol
+							%li.fragment.alert
+								Des logiciels à jour
+							%li.fragment.alert
+								Du bon sens, de la méfiance
+
+					%section
+						%h3 GNU/Linux
+						%p Tor Browser Bundle
+						%img{src: 'img/bundle.png'}
+						%p Firefox remasterisé
+
+					%section
+						%h3 Tails
+						%img{src: 'img/tails2.png'}
+
+					%section
+						%h3
+							%img{src: 'img/tails.png'}
+							Tails
+						%p Live CD/USB Debian axé anonymat & sécurité
+						%br
+						.fragment
+							%p Tor mais pas que
+							%ul
+								%li GPG
+								%li Métadonnées
+								%li Pare-feu
+								%li Mode « panic »
+								%li …
+						
+					%section
+						%h3
+							Androïd
+							%img.fragment{src: 'img/mini-troll.png'}
+						%p Orbot
+						%img{src: 'img/orbot.png'}
+
+					%section
+						%h3
+							Windows / Mac OS
+							%img.fragment{src: 'img/mini-troll.png', data: { fragment_index: 1 }}
+						%img.fragment{class: 'stretch', src: 'img/zombies.png', data: { fragment_index: 1 } }
+						%br
+						.fragment.alert Logiciel privateur ⇨ anonymat impossible
+						.fragment.success Utiliser du logiciel libre (GNU/Linux, BSD…) !!!
+
+				%section
+					%section
+						%h2 Tor, pour quoi faire ?
+
+					%section
+						%h3 Contourner la censure
+						%img.white{src: 'img/censor.png'}
+						%br
+						%p.fragment Chine, Corée du Nord, Syrie, Russie…
+						%p.fragment Mais aussi Belgique, France… !!!
+						%p.fragment On cherche à accéder à du contenu censuré
+						%br
+						.fragment.alert
+							%p Contenus illégaux dans le pays en question
+							%p ⇨ Anonymat souvent nécessaire
+
+					%section
+						%h3 Éviter le « doxing »
+						%img.white{src: 'img/doxing.png'}
+						%p.fragment Récupération d'informations personnelles dans un but malveillant
+						%p.fragment Blog sur des sujets sensibles, positions politiques…
+						%br
+						.fragment.alert Utilisation de services cachés
+
+					%section
+						%h3 Protection des lanceurs d'alerte
+						%img.white{src: 'img/whistleblower.png'}
+						%p.fragment Manning, Snowden et tant d'autres
+						%p.fragment On doit communiquer des informations sensibles
+						%br
+						.fragment
+							%p Risques encourus : perso, pro, juridiques, moraux
+							%p On doit continuer à émettre
+							%p.alert ⇨ Anonymat +++
+
+				%section
+					%section
+						%h2 Comment aider
+
+					%section
+						%h3 Héberger des nœuds de sortie
+						%p De la bande passante disponible (≥100Mbs)
+						%p S'occuper des mails abuse@
+						%br
+						.fragment
+							%p.alert Des risques possibles (convocation, saisie…)
+							%p.warning Éviter les actions isolées
+						%br
+						.fragment.success
+							%p Agir collectivement
+							%p
+								⇨
+								%img.white{src: 'img/logo.png'}
+								
+					%section
+						%h3
+							%img.white{src: 'img/logo.png'}
+						%p 23 adhérents
+						%br
+						.fragment
+							%p Des entrées RIPE
+							%p Des bénévoles pour répondre à abuse@
+						%br
+						.fragment
+							%p Marcuse : nœud intermédiaire (Liazo, 25/06/2013, 100Mbps)
+							%p Ekumen : nœud de sortie (Gandi, 23/10/2013, 100Mbps \o/)
+						%p.fragment.success Marcuse : nœud de sortie (Liazo, 15/11/2013, 100Mbps \o/ \o/)
+
+					%section
+						%h3 Héberger d'autres types de nœuds
+						
+						%p Être nœud de sortie est le plus utile pour le réseau
+						%p.alert Mais effets de bord +++
+						%br
+						.fragment
+							%p Être middle ou guard
+							%p.warning Mais toujours quelques effets de bord
+						%br
+						.fragment
+							%p On peut aussi monter des bridges ou des obfsproxy
+							%p.success Pas ou peu d'effets de bord
+
+					%section
+						%h3 Diversité
+						%img{class: 'stretch', src: 'img/as.png'}
+						%br
+						.fragment.success
+							Monter des nœuds chez des AS indépendants
+
+					%section
+						%h3 Rejet / incompréhension
+						%img{src: 'img/ovh.png'}
+						%br
+						%img{src: 'img/online.png'}
+						%br
+						.fragment.success
+							⇨ Communication, information
+						.fragment.success
+							⇨ Neutralité du réseau
+							%img{src: 'img/neutrality.png'}
+
+				%section
+					%section
+						%h2 Questions
+						
